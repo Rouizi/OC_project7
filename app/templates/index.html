@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 
   <head>
 
-    <title>GrandPy Bot, le papy-robot</title>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GrandPy Bot, le papy-robot</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
@@ -33,12 +33,16 @@
       .papy{margin: 15px 0px 15px 0px; border-radius: 5px; background-color: rgb(230, 224, 224)}
       .col-lg-offset-1{margin-left: 8.33%; margin-right: 41.67%}
       .col-lg-offset-2{margin-right: 8.33%; margin-left: 41.67%}
+      .col-lg-offset-3{margin-left: 8.33%}
       .img-discussion{margin: 5px; width: 13%}
       .img-accueil{width: 10%; margin: 5px}
       p{margin-top: 10px}
       .well{background-color: #CCC; padding: 20px}
       input{margin-bottom: 10px}
       #map {height: 400px; width: 100%; margin-bottom: 15px}
+      .loader{margin-left: 33.33%}
+      .history{display: none;}
+      .lien{margin-left: 16.66%}
 
       .a{width: 1200px;height: 30px;border: 1px solid black;margin: auto; margin-top: 70px;}
       .b{width: 992px;height: 30px;border: 1px solid blue;margin: auto;}
@@ -50,9 +54,9 @@
 
   <body>
 
-      <!--<div class="a">col-lg 1200px</div>
-      <div class="b">col-md 992</div>
-      <div class="c">col-sm 768</div>-->
+    <!--<div class="a">col-lg 1200px</div>
+    <div class="b">col-md 992</div>
+    <div class="c">col-sm 768</div>-->
 
     <!-- Navigation bar -->
     <div class="container-fluid" >
@@ -65,7 +69,7 @@
             </ul>
 
               <div class="navbar-header col-sm-7" >
-                  <img src="{{ url_for('static', filename='img/robot.png') }}" alt="logo" class="col-sm-1 img-accueil" />
+                  <img src="{{ url_for('static', filename='img/robot.png') }}" alt="robot" class="col-sm-1 img-accueil" />
                   <a class="navbar-brand col-lg-10" href="#"><span>Grandpy Bot le papy robot</span></a>
               </div>
             </div>
@@ -75,38 +79,38 @@
 
     <!-- Section -->
     <div class="container">
-      {% with messages = get_flashed_messages() %}
-      {% if messages %}
-      {% for message in messages %}
-      <div class="alert alert-info" role="alert">{{ message }}</div>
-      {% endfor %}
-      {% endif %}
-      {% endwith %}
+  
+      <div class="alert alert-info" role="alert">
+        <h2>Besoin d'une adresse ? GrandPy Bot est là pour vous ! </h2>
+      </div>
       <section class="row" style="border: 1px solid rgb(26, 26, 46)">
 
         <div class="col-sm-6 col-lg-offset-1 alert alert-info papy">
-            <img src="{{ url_for('static', filename='img/robot.png') }}" class="col-sm-2 img-discussion" />
+          <div class="row">
+            <img src="{{ url_for('static', filename='img/robot.png') }}" alt="robot" class="col-sm-2 img-discussion" />
             <p class="col-sm-10">Bonjour mon enfant. Je suis GrandPy bot, le papi robot !
             Où désires-tu aller ?</p>
+            <a href="#" class="col-sm-10 lien">en savoir plus sur wikipedia</a>
+          </div>
         </div>
 
-        <div class="col-sm-6 col-lg-offset-2 alert alert-info papy" >
-          <p class="col-sm-10">Connais tu l'adresse d'openclassroom</p>
-          <img src="{{ url_for('static', filename='img/user.png') }}" class="col-sm-2 img-discussion" />
-        </div>
-
-        <div class="col-sm-10 col-lg-offset-1" >
+        <div class="col-sm-10 col-lg-offset-1 contentMap" >
           <div id="map"></div>
+        </div>
+        <div class="col-sm-10 col-lg-offset-3 alfa  history alert-info papy">
+            
         </div>
         
       </section>
 
       <!-- Form -->
       <form class="well col-sm-10" action="/index" method="post" role="form">
+        <!--N'OUBLIE PAS LE CRSF-->
         <legend>Tapez une adresse, un lieu ...</legend>
-        <input class="form-control" id="content" type="text" placeholder="Ex: Salut GrandPy ! Est-ce que tu connais l'adresse d'OpenClassrooms ?" required autofocus>
+        <input class="form-control" id="content" type="text" placeholder="Ex: Salut GrandPy ! Est-ce que tu connais l'adresse d'OpenClassrooms ?" required>
         <button class="btn btn-primary" type="button">Rechercher </button>
       </form>
+      <span id='a'></span>
     </div>
 
     <!-- Footer -->
@@ -119,13 +123,37 @@
     </div>
 
     <!-- Jquery -->
-    <script src="{{ url_for('static', filename='jquery-3.4.1.js') }}"></script>
+    <script src="{{ url_for('static', filename='jquery-3.4.1.js') }}" charset="utf-8"></script>
     <!-- Plugin JavaScript -->
-    <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}" charset="utf-8"></script>
     <script>
       $(function() {
         function cllaback(data){
-          console.log(data)
+          data = JSON.parse(data);
+          var pAdress = $('<p>');
+          pAdress.text(data['adress']);
+
+          if (data['status'] == 'ZERO_RESULTS') {
+            $('.loader').replaceWith(pAdress);
+            console.log(data['adress'])
+          }
+          else { 
+            console.log('on est là')
+            var imgRobot = $('<img/>')
+            var pHistory = $('<p>')
+            var aHistory = $('<a>')
+            var srcImgRobot = "{{ url_for('static', filename='img/robot.png') }}"
+
+            pHistory.addClass('col-sm-10')
+            imgRobot.addClass('col-sm-2 img-discussion')
+            imgRobot.attr({'src': srcImgRobot, 'alt': 'robot'})
+            aHistory.attr('href', data['url'])
+            aHistory.text('En savoir plus sur Wikipedia.')
+
+            $('.loader').replaceWith(pAdress);
+            $('.pHistory').text()
+            $('.history').css('display', 'block')
+          }
         }
         $('.click1').css('color', '#0f6580')
         $('.click1').click(function() {
@@ -137,8 +165,53 @@
           $('.click1').css('color', '#555').css('border-bottom', '0px').css('background-color', 'transparent')
         });
         $('button').click(function() {
+          var divUser = $('<div>')
+          var rowUser = $('<div>')
+          var pUser = $('<p>')
+          var imgUser = $('<img />')
+          var srcImgUser = "{{ url_for('static', filename='img/user.png') }}"
+
+          var divPapy = $('<div>')
+          var rowPapy = $('<div>')
+          var imgPapy = $('<img />')
+          var srcImgPapy = "{{ url_for('static', filename='img/robot.png') }}"
+          var imgLoader = $('<img />')
+          var srcImgLoader = "{{ url_for('static', filename='img/loader.gif') }}"
+          
+
+          divUser.addClass("col-sm-6 col-lg-offset-2 alert alert-info papy")
+          rowUser.addClass("row")
+          pUser.addClass('col-sm-10')
+          imgUser.addClass('col-sm-2 img-discussion')
+          pUser.html($('#content').val())
+          imgUser.attr({'src': srcImgUser, 'alt': 'user'})
+
+          divPapy.addClass("col-sm-6 col-lg-offset-1 alert alert-info papy")
+          rowPapy.addClass("row")
+          imgPapy.addClass("col-sm-2 img-discussion")
+          imgPapy.attr({'src': srcImgPapy, 'alt': 'robot'})
+          imgLoader.addClass('col-sm-2 loader img-discussion')
+          imgLoader.attr({'src': srcImgLoader, 'alt': 'loader'})
+
+          pUser.appendTo(rowUser)
+          imgUser.appendTo(rowUser)
+          rowUser.appendTo(divUser)
+          divUser.insertBefore($('.contentMap'))
+
+          imgPapy.appendTo(rowPapy)
+          imgLoader.appendTo(rowPapy)
+          rowPapy.appendTo(divPapy)
+          divPapy.insertBefore($('.contentMap'))
+
+          /*<div class="col-sm-6 col-lg-offset-2 alert alert-info papy" >
+              <div class="row">
+                <p class="col-sm-10">Connais tu l'adresse d'openclassroom</p>
+                <img src="{{ url_for('static', filename='img/user.png') }}" alt="user" class="col-sm-2 img-discussion" />
+              </div>
+            </div>*/
+          /*Send data to server with AJAX request*/
           $.post(
-              '/latlng',
+              '/adress_lat_lng',
               {
                 content: $('#content').val()
               },
@@ -150,10 +223,10 @@
       });
       function initMap() {
           // The location of Paris
-          var uluru = {lat: 48.856614, lng: 2.3522219};
+          var Paris = {lat: 48.856614, lng: 2.3522219};
           // The map, centered at Paris
           var map = new google.maps.Map(
-              document.getElementById('map'), {zoom: 4, center: uluru});          
+              document.getElementById('map'), {zoom: 4, center: Paris});          
         }
     </script>
     <script async defer
