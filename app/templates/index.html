@@ -21,7 +21,7 @@
 
     <style>
       .container-fluid{padding: 0px}
-      header {padding: 0px}
+      header {padding: 0px;}
       body{ padding-top: 70px; background-color: rgb(238, 238, 237)}
       .survol:hover{ color: #0f6580; border-bottom: 3px solid #0f6580}
       .click1{border-bottom: 3px solid #0f6580}
@@ -35,14 +35,27 @@
       .col-lg-offset-2{margin-right: 8.33%; margin-left: 41.67%}
       .col-lg-offset-3{margin-left: 8.33%}
       .img-discussion{margin: 5px; width: 13%}
+      .img-history{margin: 10px; width: 8%}
       .img-accueil{width: 10%; margin: 5px}
       p{margin-top: 10px}
       .well{background-color: #CCC; padding: 20px}
       input{margin-bottom: 10px}
       #map {height: 400px; width: 100%; margin-bottom: 15px}
-      .loader{margin-left: 33.33%}
-      .history{display: none;}
-      .lien{margin-left: 16.66%}
+      .contentHistory{display: none;}
+      .lien{margin-left: 10%}
+      .loader {
+      margin-left: 33.33%;
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #4e5357; 
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
 
       .a{width: 1200px;height: 30px;border: 1px solid black;margin: auto; margin-top: 70px;}
       .b{width: 992px;height: 30px;border: 1px solid blue;margin: auto;}
@@ -64,25 +77,24 @@
       <header class="row col-sm-12">
           <div class="navbar navbar-default navbar-fixed-top col-sm-12" >
             <ul class="nav navbar-nav col-sm-5">
-              <li class="active"><a class="click1" href="#">Home</a></li>
-              <li><a class="click2" href="#">About me</a></li>
+              <li class="active"><a class="click1" href="#">Accueil</a></li>
+              <li><a class="click2" href="#">A propos de moi</a></li>
             </ul>
-
-              <div class="navbar-header col-sm-7" >
-                  <img src="{{ url_for('static', filename='img/robot.png') }}" alt="robot" class="col-sm-1 img-accueil" />
-                  <a class="navbar-brand col-lg-10" href="#"><span>Grandpy Bot le papy robot</span></a>
-              </div>
+            <div class="navbar-header col-sm-7" >
+                <img src="{{ url_for('static', filename='img/robot.png') }}" alt="robot" class="col-sm-1 img-accueil" />
+                <a class="navbar-brand col-lg-10" href="#"><span>Grandpy Bot le papy robot</span></a>
             </div>
+          </div>
       </header>
 
     </div>
-
-    <!-- Section -->
+    
     <div class="container">
   
-      <div class="alert alert-info" role="alert">
+      <div class="alert alert-info jumbotron" role="alert">
         <h2>Besoin d'une adresse ? GrandPy Bot est là pour vous ! </h2>
       </div>
+      <!-- Section -->
       <section class="row" style="border: 1px solid rgb(26, 26, 46)">
 
         <div class="col-sm-6 col-lg-offset-1 alert alert-info papy">
@@ -90,15 +102,14 @@
             <img src="{{ url_for('static', filename='img/robot.png') }}" alt="robot" class="col-sm-2 img-discussion" />
             <p class="col-sm-10">Bonjour mon enfant. Je suis GrandPy bot, le papi robot !
             Où désires-tu aller ?</p>
-            <a href="#" class="col-sm-10 lien">en savoir plus sur wikipedia</a>
           </div>
         </div>
 
         <div class="col-sm-10 col-lg-offset-1 contentMap" >
           <div id="map"></div>
         </div>
-        <div class="col-sm-10 col-lg-offset-3 alfa  history alert-info papy">
-            
+        <div class="col-sm-10 col-lg-offset-3 contentHistory alert-info papy">
+            <div class="row history"></div>
         </div>
         
       </section>
@@ -108,9 +119,29 @@
         <!--N'OUBLIE PAS LE CRSF-->
         <legend>Tapez une adresse, un lieu ...</legend>
         <input class="form-control" id="content" type="text" placeholder="Ex: Salut GrandPy ! Est-ce que tu connais l'adresse d'OpenClassrooms ?" required>
-        <button class="btn btn-primary" type="button">Rechercher </button>
+        <button class="btn btn-primary submit" type="button">Rechercher </button>
+        <button data-toggle="modal" href="#infos" class="btn btn-primary pull-right" type="button">Informations</button>
+        <div class="modal fade" id="infos">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">x</button>
+                <h4 class="modal-title">GrandPy n'entend plus très bien !</h4>
+              </div>
+              <div class="modal-body">
+                <p>Papi robot est avant tout un robot, qui se contente d'extraire les données necessaires pour trouver un lieu.
+                  Saisir une phrase telle que : "je veux aller à la mairie du 10e, à Paris" aboutira certainement.</br>
+                  Vous pouvez même saisir un lieu comme: "oû se trouve la tour eiffel papy ?".
+                </p>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-info" data-dismiss="modal">Fermer</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </form>
-      <span id='a'></span>
+      
     </div>
 
     <!-- Footer -->
@@ -131,31 +162,57 @@
         function cllaback(data){
           data = JSON.parse(data);
           var pAdress = $('<p>');
+          var imgRobot = $('<img/>');
+          var pHistory = $('<p>');
+          var aHistory = $('<a>');
+          var srcImgRobot = "{{ url_for('static', filename='img/robot.png') }}";
+
+          pAdress.addClass('col-sm-10')
+          pHistory.addClass('col-sm-10');
+          imgRobot.addClass('col-sm-2 img-history');
+          imgRobot.attr({'src': srcImgRobot, 'alt': 'robot'});
+          aHistory.addClass('col-sm-10 lien');
           pAdress.text(data['adress']);
+          $('.loader').replaceWith(pAdress);
+          $('.history').empty();
 
           if (data['status'] == 'ZERO_RESULTS') {
-            $('.loader').replaceWith(pAdress);
-            console.log(data['adress'])
+            var Paris = {lat: 48.856614, lng: 2.3522219};
+            var map = new google.maps.Map(
+              document.getElementById('map'), {zoom: 4, center: Paris});
+          }
+          else if (data['status'] == 'OK') {
+            var place = {lat: data['lat'], lng: data['lng']};
+            // The map, centered at the place the user request
+            var map = new google.maps.Map(
+              document.getElementById('map'), {zoom: 13, center: place});
+            // The marker, positioned at the place the user request
+            var marker = new google.maps.Marker({position: place, map: map});
+            pHistory.text(data['history']);
+            imgRobot.appendTo($('.history'));
+            pHistory.appendTo($('.history'));
+            $('.contentHistory').css('display', 'block');
           }
           else { 
-            console.log('on est là')
-            var imgRobot = $('<img/>')
-            var pHistory = $('<p>')
-            var aHistory = $('<a>')
-            var srcImgRobot = "{{ url_for('static', filename='img/robot.png') }}"
+            console.log('on est là');
+            // the location of the place that the user request
+            var place = {lat: data['lat'], lng: data['lng']};
+            // The map, centered at the place the user request
+            var map = new google.maps.Map(
+              document.getElementById('map'), {zoom: 13, center: place});
+            // The marker, positioned at the place the user request
+            var marker = new google.maps.Marker({position: place, map: map});
 
-            pHistory.addClass('col-sm-10')
-            imgRobot.addClass('col-sm-2 img-discussion')
-            imgRobot.attr({'src': srcImgRobot, 'alt': 'robot'})
-            aHistory.attr('href', data['url'])
-            aHistory.text('En savoir plus sur Wikipedia.')
-
-            $('.loader').replaceWith(pAdress);
-            $('.pHistory').text()
-            $('.history').css('display', 'block')
+            aHistory.attr('href', data['url']);
+            aHistory.text('En savoir plus sur Wikipedia.');
+            pHistory.text(data['history']);
+            imgRobot.appendTo($('.history'));
+            pHistory.appendTo($('.history'));
+            aHistory.appendTo($('.history'));
+            $('.contentHistory').css('display', 'block');  
           }
         }
-        $('.click1').css('color', '#0f6580')
+        $('.click1').css('color', '#0f6580');
         $('.click1').click(function() {
           $(this).css('color', '#0f6580').css('border-bottom', '3px solid #0f6580').css('background-color', 'rgb(231, 231, 231)')
           $('.click2').css('color', '#555').css('border-bottom', '0px').css('background-color', 'transparent')
@@ -164,44 +221,42 @@
           $(this).css('color', '#0f6580').css('border-bottom', '3px solid #0f6580').css('background-color', 'rgb(231, 231, 231)')
           $('.click1').css('color', '#555').css('border-bottom', '0px').css('background-color', 'transparent')
         });
-        $('button').click(function() {
-          var divUser = $('<div>')
-          var rowUser = $('<div>')
-          var pUser = $('<p>')
-          var imgUser = $('<img />')
-          var srcImgUser = "{{ url_for('static', filename='img/user.png') }}"
+        $('.submit').click(function() {
+          var divUser = $('<div>');
+          var rowUser = $('<div>');
+          var pUser = $('<p>');
+          var imgUser = $('<img />');
+          var srcImgUser = "{{ url_for('static', filename='img/user.png') }}";
 
-          var divPapy = $('<div>')
-          var rowPapy = $('<div>')
-          var imgPapy = $('<img />')
-          var srcImgPapy = "{{ url_for('static', filename='img/robot.png') }}"
-          var imgLoader = $('<img />')
-          var srcImgLoader = "{{ url_for('static', filename='img/loader.gif') }}"
+          var divPapy = $('<div>');
+          var rowPapy = $('<div>');
+          var imgPapy = $('<img />');
+          var srcImgPapy = "{{ url_for('static', filename='img/robot.png') }}";
+          var divLoader = $('<div>');
           
 
-          divUser.addClass("col-sm-6 col-lg-offset-2 alert alert-info papy")
-          rowUser.addClass("row")
-          pUser.addClass('col-sm-10')
-          imgUser.addClass('col-sm-2 img-discussion')
-          pUser.html($('#content').val())
-          imgUser.attr({'src': srcImgUser, 'alt': 'user'})
+          divUser.addClass("col-sm-6 col-lg-offset-2 alert alert-info papy");
+          rowUser.addClass("row");
+          pUser.addClass('col-sm-10');
+          imgUser.addClass('col-sm-2 img-discussion');
+          pUser.html($('#content').val());
+          imgUser.attr({'src': srcImgUser, 'alt': 'user'});
 
-          divPapy.addClass("col-sm-6 col-lg-offset-1 alert alert-info papy")
-          rowPapy.addClass("row")
-          imgPapy.addClass("col-sm-2 img-discussion")
-          imgPapy.attr({'src': srcImgPapy, 'alt': 'robot'})
-          imgLoader.addClass('col-sm-2 loader img-discussion')
-          imgLoader.attr({'src': srcImgLoader, 'alt': 'loader'})
+          divPapy.addClass("col-sm-6 col-lg-offset-1 alert alert-info papy");
+          rowPapy.addClass("row");
+          imgPapy.addClass("col-sm-2 img-discussion");
+          imgPapy.attr({'src': srcImgPapy, 'alt': 'robot'});
+          divLoader.addClass('col-sm-2 loader img-discussion');
 
-          pUser.appendTo(rowUser)
-          imgUser.appendTo(rowUser)
-          rowUser.appendTo(divUser)
-          divUser.insertBefore($('.contentMap'))
+          pUser.appendTo(rowUser);
+          imgUser.appendTo(rowUser);
+          rowUser.appendTo(divUser);
+          divUser.insertBefore($('.contentMap'));
 
-          imgPapy.appendTo(rowPapy)
-          imgLoader.appendTo(rowPapy)
-          rowPapy.appendTo(divPapy)
-          divPapy.insertBefore($('.contentMap'))
+          imgPapy.appendTo(rowPapy);
+          divLoader.appendTo(rowPapy);
+          rowPapy.appendTo(divPapy);
+          divPapy.insertBefore($('.contentMap'));
 
           /*<div class="col-sm-6 col-lg-offset-2 alert alert-info papy" >
               <div class="row">
@@ -230,7 +285,7 @@
         }
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDqAzPXNIxR8TB9qhpda8MsnLj5JCDPiqs &callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key={{ key }}&callback=initMap">
     </script>
 
   </body>

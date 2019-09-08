@@ -1,5 +1,6 @@
 import requests
 import wikipedia
+from app import app
 
 adress_found = [
             "Bien sûr mon poussin ! Voici l'adresse: ",
@@ -8,20 +9,27 @@ adress_found = [
             "Aussitôt demandé, aussitôt trouvé ! Ce que tu cherches est au ",
             "Ouh, ça fait un bail ! Mais si ma mémoire est bonne l'adresse est celle ci: "
         ]
-adress_no = [
+adress_not_foud = [
             "Oh, j'ai beau réfléchir, je ne me souviens plus de cette adresse ...",
             "Oh la la ! Je suis un peu confus. Tu peux me faire une demande plus claire et directe ?",
             "Dis-moi ça plus clairement s'il te plait !",
             "Ça ne me dit rien, pourrais-tu être plus clair ?",
             "Je n'ai pas compris ! Que dis-tu ?"
-        ]
+            ]
 relate = [
-            "En parlant de ça, j'avais une petite chose à te raconter ... ",
-            "D'ailleurs, cela me rappelle quelque chose ... ",
-            "Souvenir, souvenir ! Je me souviens de cet endroit. En voici l'histoire: ",
-            "Je connais très bien ce lieu. GrandPy Bot va te conter son histoire... ",
-            "Sa te dirais une petite histoire sur ce lieu ... "
+        "En parlant de ça, j'avais une petite chose à te raconter ... ",
+        "D'ailleurs, cela me rappelle quelque chose ... ",
+        "Souvenir, souvenir ! Je me souviens de cet endroit. En voici l'histoire: ",
+        "Je connais très bien ce lieu. GrandPy Bot va te conter son histoire... ",
+        "Sa te dirais une petite histoire sur ce lieu ... "
         ]
+no_relate = [
+            "Oh ! Je n'ai plus les idées claires, j'ai oublié l'histoire à ce sujet.",
+            "Désolé mais je n'ai pas d'histoire intéressante à ce sujet.",
+            "Pardon mais je connais mal l'histoire de cet endroit.",
+            "Euh je crois avoir oublié l'histoire sur cet endroit !",
+            "Je devrais réviser un peu les cours d'histoires..."
+            ]
 
 
 class GoogleMap:
@@ -35,7 +43,7 @@ class GoogleMap:
             "input": self.content,
             "inputtype": "textquery",
             "fields": "formatted_address,geometry/location",
-            "key": "AIzaSyDqAzPXNIxR8TB9qhpda8MsnLj5JCDPiqs"
+            "key": app.config['GOOGLE_MAP_KEY']
         }
         url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json"
 
@@ -62,7 +70,7 @@ class GoogleMap:
                     "input": ' '.join(content),
                     "inputtype": "textquery",
                     "fields": "formatted_address,geometry/location",
-                    "key": "AIzaSyDqAzPXNIxR8TB9qhpda8MsnLj5JCDPiqs"
+                    "key": app.config['GOOGLE_MAP_KEY']
                 }
                 url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json"
 
@@ -75,9 +83,9 @@ class HistoryFromWiki:
 
     def get_history_url(self):
         wikipedia.set_lang("fr")
-        place = wikipedia.geosearch(latitude=self.lat, longitude=self.lng, results=1)
 
         try:
+            place = wikipedia.geosearch(latitude=self.lat, longitude=self.lng, results=1)
             url = wikipedia.page(place[0]).url
             history = wikipedia.summary(place[0])
             return history, url
@@ -85,12 +93,16 @@ class HistoryFromWiki:
             return
         except wikipedia.exceptions.DisambiguationError:
             return
+        except wikipedia.exceptions.WikipediaException:
+            return
+        except IndexError:
+            return
 
-
-"""g = GoogleMap("zvzvz")
+"""28.033886, 1.659626
+g = GoogleMap("papay")
 results = g.get_adress_lat_lng()
 print(results)"""
-"""h = HistoryFromWiki(48.85837009999999, 2.2944813)
-print(h.get_history_url()))"""
+"""h = HistoryFromWiki(28.033886, 1.659626)
+print(h.get_history_url())"""
 
 
