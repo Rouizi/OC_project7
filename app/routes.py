@@ -7,10 +7,17 @@ import random
 @app.route('/')
 @app.route('/index')
 def index():
-    flash("Besoin d'une adresse ? GrandPy Bot est là pour vous ! "
-          "On dit même qu'il a toujours une petite histoire à raconter ...")
+    activate = True
+    script = True
     key = app.config['GOOGLE_MAP_KEY']
-    return render_template('index.html', key=key)
+    return render_template('index.html', key=key, activate=activate, script=script)
+
+@app.route('/a_propos_de_moi')
+def a_propos_de_moi():
+    activate = False
+    script = False
+    key = app.config['GOOGLE_MAP_KEY']
+    return render_template('a_propos_de_moi.html', key=key, activate=activate, script=script)
     
 @app.route('/adress_lat_lng', methods=['POST'])
 def adress_lat_lng():
@@ -26,8 +33,6 @@ def adress_lat_lng():
         results_wiki = history_from_wiki.get_history_url()
         if results_wiki is not None:
             history = relate[nb] + results_wiki[0]
-
-            # I set ensure_ascii to False to be able to display special characters
             return json.dumps({'status': 'SUCCESS',
                                'adress': adress,
                                'lat': results_google[1],
@@ -43,13 +48,3 @@ def adress_lat_lng():
     else:
         return json.dumps({'status': 'ZERO_RESULTS', 'adress': adress_not_foud[nb]})
 
-
-@app.route('/signUp')
-def signUp():
-    return render_template('signUp.html')
-
-@app.route('/signUpUser1', methods=['POST'])
-def signUpUser1():
-    user =  request.form['username']
-    password = request.form['password']
-    return json.dumps({'status':'OK','user':user,'pass':password})

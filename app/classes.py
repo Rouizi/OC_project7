@@ -2,6 +2,7 @@ import requests
 import wikipedia
 from app import app
 
+
 adress_found = [
             "Bien sûr mon poussin ! Voici l'adresse: ",
             "Mais oui mon p'tit, tiens mon neurone vient de démarrer, voici l'adresse: ",
@@ -33,12 +34,13 @@ no_relate = [
 
 
 class GoogleMap:
+    """this class is responsible for retrieving the address, latitude and longitude from the google map API"""
 
     def __init__(self, content):
-        self.content = content #"Salut GrandPy ! Est-ce que tu connais l'adresse d'openclassroom?"
+        self.content = content
 
     def get_adress_lat_lng(self):
-        content = self.content.split(' ') #['GrandPy', '!', 'Est-ce', 'que', 'tu', 'connais', "l'adresse", "d'OpenClassrooms", '?']
+        content = self.content.split(' ')
         payload = {
             "input": self.content,
             "inputtype": "textquery",
@@ -58,9 +60,11 @@ class GoogleMap:
                 lng = r_json['candidates'][0]['geometry']['location']['lng']
                 return formatted_address, lat, lng
             if len(content) > 0:
-                #if the url does not give any result we remove the first word and then we retest then the second and so
+                # if the url does not give any result we remove the first word and then we retest then the second and so
                 # on. If no result is found by removing all the words we start again but we remove the last one and so on
                 content.pop(index)
+                # if no results are found by removing all the words starting from the right and starting from the left
+                # we return None
                 if len(content) == 0 and index == -1:
                     return None
                 if len(content) == 0:
@@ -76,6 +80,7 @@ class GoogleMap:
 
 
 class HistoryFromWiki:
+    """this class is responsible for retrieving a history and the url by using the wikipedia module"""
 
     def __init__(self, lat, lng):
         self.lat = lat
@@ -89,20 +94,15 @@ class HistoryFromWiki:
             url = wikipedia.page(place[0]).url
             history = wikipedia.summary(place[0])
             return history, url
+        # PageError if the page doesn’t exist
         except wikipedia.exceptions.PageError:
             return
+        # DisambiguationError if the page is a disambiguation page
         except wikipedia.exceptions.DisambiguationError:
             return
+        # WikipediaException if the latitude or longitude does not match any results
         except wikipedia.exceptions.WikipediaException:
             return
+        # if wikipedia.geoserch gives an empty list(search for algeria) so wikipedia.page(place[0]).url raise an IndexError
         except IndexError:
             return
-
-"""28.033886, 1.659626
-g = GoogleMap("papay")
-results = g.get_adress_lat_lng()
-print(results)"""
-"""h = HistoryFromWiki(28.033886, 1.659626)
-print(h.get_history_url())"""
-
-

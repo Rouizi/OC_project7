@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GrandPy Bot, le papy-robot</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="{{ url_for('static', filename='bootstrap.min.css') }}" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/ad6328b9e0.js"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style>
+      .container-fluid {padding: 0px}
+      header {padding: 0px}
+      body { padding-top: 70px; background-color: rgb(238, 238, 237)}
+      .survol:hover { color: #0f6580; border-bottom: 3px solid #0f6580}
+      .about {height: 480px; margin-top: 100px}
+      .click1, .click2 {height: 63px}
+      .descri {margin-bottom: 30px;}
+      .navbar-default {background-color: #c8d1d3}
+      footer {height: 70px;display: flex; justify-content: center; align-items: center}
+      .pied {background-color: rgb(180, 201, 200)}
+      .rs {margin-left: 30px}
+      section { border-radius: 5px; background-color: rgb(153, 173, 191); margin-bottom: 20px; border: 1px solid rgb(114, 143, 170)}
+      .papy {margin: 15px 0px 15px 0px; border-radius: 5px; background-color: rgb(230, 224, 224)}
+      .col-lg-offset-1 {margin-left: 8.33%; margin-right: 41.67%}
+      .col-lg-offset-2 {margin-right: 8.33%; margin-left: 41.67%}
+      .col-lg-offset-3 {margin-left: 8.33%}
+      .img-discussion {margin: 5px}
+      .img-history {margin: 10px}
+      .img-accueil {margin-top: 5px}
+      p {margin-top: 10px}
+      .well {background-color: #CCC; padding: 20px}
+      .well-1 {background-color: rgb(167, 167, 167); border: 2px solid rgb(26, 26, 46); background-color: #CCC; padding: 20px}
+      input {margin-bottom: 10px}
+      #map {height: 400px; width: 100%; margin-bottom: 15px}
+      .contentHistory {display: none}
+      .lien {margin-left: 10%}
+      .loader {
+        margin-left: 33.33%;
+        border: 6px solid #f3f3f3;
+        border-top: 6px solid #4e5357;
+        border-radius: 50%; 
+        width: 50px; height: 50px;
+        animation: spin 1s linear infinite
+        }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+    <!-- Navigation bar -->
+    <div class="container-fluid" >
+
+      <header class="row col-sm-12">
+          <div class="navbar navbar-default navbar-fixed-top col-sm-12">
+            <ul class="nav navbar-nav col-md-5 col-sm-6 col-xs-7">
+              <li class="col-lg-4 col-sm-4 col-xs-6"><a class="click1" href="{{ url_for('index') }}">Accueil</a></li>
+              <li class="col-lg-5 col-sm-6 col-xs-6"><a class="click2" href="{{ url_for('a_propos_de_moi') }}">À propos de moi</a></li>
+            </ul>
+            <div class="navbar-header col-md-7 col-sm-6 hidden-xs">
+              <div class="row">
+                <img src="{{ url_for('static', filename='img/robot.png') }}" alt="robot" class="img-accueil hidden-xs pull-left" />
+              <a class="navbar-brand col-lg-5" href="{{ url_for('index') }}">Grandpy Bot le papy robot</a>
+              </div>
+            </div>
+          </div>
+
+      </header>
+
+    </div>
+    
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <div class="container-fluid pied">
+      <footer class="row col-sm-12">
+        <a href="#" class="rs"><i class="fab fa-facebook-square fa-3x survol"></i></a>
+        <a href="#" class="rs"><i class="fab fa-twitter-square fa-3x survol"></i></a>
+        <a href="https://www.linkedin.com/in/yacine-rouizi-bb05a4182/" class="rs"><i class="fab fa-linkedin fa-3x survol"></i></a>
+        <a href="https://github.com/Rouizi" class="rs"><i class="fab fa-github-square fa-3x survol"></i></a>
+      </footer>
+    </div>
+
+    <!-- Jquery -->
+    <script src="{{ url_for('static', filename='jquery-3.4.1.js') }}" charset="utf-8"></script>
+    <!-- Plugin JavaScript -->
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}" charset="utf-8"></script>
+    <script>
+      $(function() {
+        // function called in AJAX return
+        function cllaback(data){
+          data = JSON.parse(data);
+          var pAdress = $('<p>');
+          var imgRobot = $('<img/>');
+          var pHistory = $('<p>');
+          var aHistory = $('<a>');
+          var srcImgRobot = "{{ url_for('static', filename='img/robot.png') }}";
+
+          pAdress.addClass('col-sm-10')
+          pHistory.addClass('col-sm-10');
+          imgRobot.addClass('hidden-xs pull-left img-history');
+          imgRobot.attr({'src': srcImgRobot, 'alt': 'robot'});
+          aHistory.addClass('col-sm-9 lien');
+          pAdress.text(data['adress']);
+          $('.loader').replaceWith(pAdress);
+          $('.history').empty();
+
+          if (data['status'] == 'ZERO_RESULTS') {
+            var Paris = {lat: 48.856614, lng: 2.3522219};
+            var map = new google.maps.Map(
+              document.getElementById('map'), {zoom: 4, center: Paris});
+          }
+          else if (data['status'] == 'OK') {
+            var place = {lat: data['lat'], lng: data['lng']};
+            // The map, centered at the place the user request
+            var map = new google.maps.Map(
+              document.getElementById('map'), {zoom: 13, center: place});
+            // The marker, positioned at the place the user request
+            var marker = new google.maps.Marker({position: place, map: map});
+            pHistory.text(data['history']);
+            imgRobot.appendTo($('.history'));
+            pHistory.appendTo($('.history'));
+            $('.contentHistory').css('display', 'block');
+          }
+          else { 
+            // the location of the place that the user request
+            var place = {lat: data['lat'], lng: data['lng']};
+            // The map, centered at the place the user request
+            var map = new google.maps.Map(
+              document.getElementById('map'), {zoom: 13, center: place});
+            // The marker, positioned at the place the user request
+            var marker = new google.maps.Marker({position: place, map: map});
+
+            aHistory.attr('href', data['url']);
+            aHistory.text('En savoir plus sur Wikipedia.');
+            pHistory.text(data['history']);
+            imgRobot.appendTo($('.history'));
+            pHistory.appendTo($('.history'));
+            aHistory.appendTo($('.history'));
+            $('.contentHistory').css('display', 'block');  
+          }
+        }
+        
+        {% if activate %}
+        $('.click1').css('color', '#0f6580').css('border-bottom', '3px solid #0f6580').css('background-color', 'rgb(231, 231, 231)');
+        $('.click2').css('color', '#555').css('border-bottom', '0px').css('background-color', 'transparent');
+        {% else %}
+        $('.click2').css('color', '#0f6580').css('border-bottom', '3px solid #0f6580').css('background-color', 'rgb(231, 231, 231)');
+        $('.click1').css('color', '#555').css('border-bottom', '0px').css('background-color', 'transparent');
+        {% endif %}
+        $('.submit').click(function() {
+          var divUser = $('<div>');
+          var rowUser = $('<div>');
+          var pUser = $('<p>');
+          var imgUser = $('<img />');
+          var srcImgUser = "{{ url_for('static', filename='img/user.png') }}";
+
+          var divPapy = $('<div>');
+          var rowPapy = $('<div>');
+          var imgPapy = $('<img />');
+          var srcImgPapy = "{{ url_for('static', filename='img/robot.png') }}";
+          var divLoader = $('<div>');
+          
+          divUser.addClass("col-sm-6 col-lg-offset-2 alert alert-info papy");
+          rowUser.addClass("row");
+          pUser.addClass('col-sm-10');
+          imgUser.addClass('hidden-xs img-discussion');
+          pUser.html($('#content').val());
+          imgUser.attr({'src': srcImgUser, 'alt': 'user'});
+
+          divPapy.addClass("col-sm-6 col-lg-offset-1 alert alert-info papy");
+          rowPapy.addClass("row");
+          imgPapy.addClass("hidden-xs pull-left img-discussion");
+          imgPapy.attr({'src': srcImgPapy, 'alt': 'robot'});
+          divLoader.addClass('col-sm-2 loader img-discussion');
+
+          pUser.appendTo(rowUser);
+          imgUser.appendTo(rowUser);
+          rowUser.appendTo(divUser);
+          divUser.insertBefore($('.contentMap'));
+
+          imgPapy.appendTo(rowPapy);
+          divLoader.appendTo(rowPapy);
+          rowPapy.appendTo(divPapy);
+          divPapy.insertBefore($('.contentMap'));
+
+          // Send data to server with AJAX request
+          $.post(
+              '/adress_lat_lng',
+              {
+                content: $('#content').val()
+              },
+              cllaback,
+              'text'
+          );
+        });
+        
+      });
+      {% if activate %}
+      // function that displays the map
+      function initMap() {
+          // The location of Paris
+          var Paris = {lat: 48.856614, lng: 2.3522219};
+          // The map, centered at Paris
+          var map = new google.maps.Map(
+              document.getElementById('map'), {zoom: 4, center: Paris});          
+        }
+      {% endif %}
+    </script>
+    {% if script %}
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key={{ key }}&callback=initMap">
+    </script>
+    {% endif %}
+
+  </body>
+
+</html>
