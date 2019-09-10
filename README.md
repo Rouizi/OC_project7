@@ -21,13 +21,13 @@ The message is displayed in the box above which displays all the messages exchan
 
 Then a new message appears:
 
-> "Of course my chick, here it is: 7 quoted Paradis, 75010 Paris."
+> "Of course my chick, here it is: 7 city Paradis, 75010 Paris."
 
 Below, a Google Maps map also appears with a marker indicating the requested address.
 
 GrandPy sends a new message:
 
-> "But have I ever told you the story of this neighborhood that saw me in short pants?" The Cité Paradis is a public road located in the 10th district of Paris .This is a tee, a branch leads to 43 street of Paradis, the second at 57 street of Hauteville and the third dead end. [Learn more about](https://fr.wikipedia.org/wiki/Cit%C3%A9_Paradis)"
+> "But have I ever told you the story of this neighborhood that saw me in short pants? The Cité Paradis is a public road located in the 10th district of Paris .It is shaped like a tee, a branch leads to 43 street of Paradis, the second at 57 street of Hauteville and the third dead end. [Learn more about](https://fr.wikipedia.org/wiki/Cit%C3%A9_Paradis)"
 
 ### Deliverables
   - Text document explaining the process
