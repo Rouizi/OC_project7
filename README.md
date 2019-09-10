@@ -15,7 +15,7 @@ The user opens his browser and enters the URL you provided him. He arrives in fr
  
 The user types in the form field and presses the enter key:
 
-> "Salut GrandPy ! Est-ce que tu connais l'adresse d'OpenClassrooms ?"
+> "Hi GrandPy, do you know the address of OpenClassrooms?"
 
 The message is displayed in the box above which displays all the messages exchanged. An icon turns to indicate that GrandPy is thinking.
 
@@ -27,8 +27,7 @@ Below, a Google Maps map also appears with a marker indicating the requested add
 
 GrandPy sends a new message:
 
-> 
-"But have I ever told you the story of this neighborhood that saw me in short pants?" The Cité Paradis is a public road located in the 10th district of Paris .This is a tee, a branch leads to 43 street of Paradis, the second at 57 street of Hauteville and the third dead end. [Learn more about](https://fr.wikipedia.org/wiki/Cit%C3%A9_Paradis)"
+> "But have I ever told you the story of this neighborhood that saw me in short pants?" The Cité Paradis is a public road located in the 10th district of Paris .This is a tee, a branch leads to 43 street of Paradis, the second at 57 street of Hauteville and the third dead end. [Learn more about](https://fr.wikipedia.org/wiki/Cit%C3%A9_Paradis)"
 
 ### Deliverables
   - Text document explaining the process
