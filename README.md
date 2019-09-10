@@ -33,7 +33,7 @@ GrandPy sends a new message:
   - Text document explaining the process
     - difficulties encountered / solutions found
     - Github link
-    - site link deployed to use your project in production
+    - site link deployed to use your project in production 
     - pdf format not exceeding 2 A4 pages
     - written in English or Frenchs
   - Deposit source code on Github
@@ -44,3 +44,5 @@ GrandPy sends a new message:
   - Using AJAX to send questions and view answers
   - Tests using mocks for APIs
   - Put in line with Heroku
+  
+You can find my web site here: [https://flask-grandpy.herokuapp.com/](https://flask-grandpy.herokuapp.com/)
